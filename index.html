@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transition Ready | Service Member Exit Planner</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #111a2b;
+      --panel-2: #172338;
+      --line: #2b3955;
+      --text: #e9eef7;
+      --muted: #aab7cf;
+      --accent: #7cc7ff;
+      --accent-2: #8cffc7;
+      --warn: #ffcf7a;
+      --good: #8cffc7;
+      --bad: #ff9a9a;
+      --shadow: 0 10px 30px rgba(0,0,0,0.25);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #09101d 0%, #0d1525 100%);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      background: radial-gradient(circle at top right, rgba(124,199,255,0.12), transparent 30%),
+                  radial-gradient(circle at left center, rgba(140,255,199,0.10), transparent 35%),
+                  var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 900px;
+      font-size: 1rem;
+    }
+
+    .top-grid,
+    .content-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .top-grid {
+      grid-template-columns: 1.1fr 0.9fr;
+      margin-bottom: 20px;
+    }
+
+    .content-grid {
+      grid-template-columns: repeat(12, 1fr);
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2,
+    .card h3 {
+      margin-top: 0;
+      line-height: 1.15;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: -6px;
+      margin-bottom: 14px;
+    }
+
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    label {
+      display: block;
+      margin: 10px 0 6px;
+      font-weight: 600;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--text);
+      padding: 12px 14px;
+      font: inherit;
+    }
+
+    textarea { min-height: 88px; resize: vertical; }
+
+    .grid-2, .grid-3 { display: grid; gap: 14px; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    button {
+      background: linear-gradient(180deg, #7cc7ff, #57aaf1);
+      color: #08111f;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    button.secondary {
+      background: #1a2841;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      background: #16243a;
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.88rem;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .section-title small {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      padding-left: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .list li {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .tip-box, .callout, .resource-box {
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+    }
+
+    .tip-box {
+      background: rgba(140,255,199,0.06);
+    }
+
+    .callout {
+      background: rgba(255,207,122,0.08);
+    }
+
+    .resource-box {
+      background: #142034;
+    }
+
+    .resource-box h4 {
+      margin: 0 0 6px;
+    }
+
+    .resource-box p {
+      margin: 4px 0;
+      color: var(--muted);
+    }
+
+    .muted { color: var(--muted); }
+    .hidden { display: none; }
+    .fine { font-size: 0.88rem; color: var(--muted); }
+    .good { color: var(--good); }
+    .warn { color: var(--warn); }
+
+    .timeline-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #152642;
+      color: var(--accent-2);
+      border: 1px solid var(--line);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+
+    .checklist-wrap {
+      display: grid;
+      gap: 12px;
+    }
+
+    .progress-shell {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: #142034;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #8cffc7, #7cc7ff);
+      transition: width 0.25s ease;
+    }
+
+    .check-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .check-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+      accent-color: #8cffc7;
+      flex: 0 0 auto;
+    }
+
+    .check-item.done {
+      opacity: 0.72;
+      border-color: rgba(140,255,199,0.18);
+    }
+
+    .check-item.done .check-text {
+      text-decoration: line-through;
+    }
+
+    .mini-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .mini-nav a {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #132036;
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 980px) {
+      .top-grid { grid-template-columns: 1fr; }
+      .span-4, .span-6, .span-8, .span-12 { grid-column: span 12; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      .hero, .card { box-shadow: none; background: white; color: black; border-color: #ddd; }
+      a { color: #0a58ca; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Transition Ready</h1>
+      <p>
+        A clean, practical exit planner for service members getting ready to leave the military.
+        Put in your info, get a real-world game plan, a live checklist you can mark complete, job ideas that make sense,
+        VA benefit steps, state and local direction, family tips, and the stuff people usually figure out too late.
+      </p>
+      <div class="pill-row">
+        <span class="pill">ETS timeline tasks</span>
+        <span class="pill">MOS to civilian job ideas</span>
+        <span class="pill">VA and GI Bill guidance</span>
+        <span class="pill">State veteran resources</span>
+        <span class="pill">Resume and interview help</span>
+        <span class="pill">Big veteran organizations</span>
+        <span class="pill">Live checklist with progress</span>
+        <span class="pill">Spouse and family planning</span>
+        <span class="pill">Federal resume help</span>
+      </div>
+      <div class="mini-nav">
+        <a href="#results">Your plan</a>
+        <a href="#checklistCard">Checklist</a>
+        <a href="#vaCard">VA</a>
+        <a href="#stateCard">State help</a>
+        <a href="#resourceCard">Resources</a>
+      </div>
+    </section>
+
+    <section class="top-grid">
+      <div class="card">
+        <h2>Build your transition plan</h2>
+        <p class="sub">Answer a few questions and the app will build a custom game plan.</p>
+
+        <div class="grid-3">
+          <div>
+            <label for="branch">Branch</label>
+            <select id="branch">
+              <option>Army</option>
+              <option>Air Force</option>
+              <option>Navy</option>
+              <option>Marine Corps</option>
+              <option>Space Force</option>
+              <option>Coast Guard</option>
+              <option>National Guard</option>
+              <option>Reserve</option>
+            </select>
+          </div>
+          <div>
+            <label for="rank">Rank</label>
+            <input id="rank" placeholder="Example: E5, O3, CW2" />
+          </div>
+          <div>
+            <label for="serviceYears">Time in service</label>
+            <input id="serviceYears" type="number" min="0" max="40" placeholder="Years" />
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div>
+            <label for="mos">MOS / AFSC / Rate</label>
+            <input id="mos" placeholder="Example: 11B, 12B, 25B, 88M, HM, 2A6X1" />
+          </div>
+          <div>
+            <label for="daysLeft">How far from ETS / separation</label>
+            <input id="daysLeft" type="number" min="0" max="730" placeholder="Days left" />
+          </div>
+          <div>
+            <label for="state">State after service</label>
+            <select id="state"></select>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div>
+            <label for="zipCode">ZIP code after service</label>
+            <input id="zipCode" inputmode="numeric" maxlength="10" placeholder="Example: 80903" />
+          </div>
+          <div>
+            <label for="familyStatus">Family situation</label>
+            <select id="familyStatus">
+              <option>Single</option>
+              <option>Married / partner</option>
+              <option>Kids</option>
+              <option>Married / partner with kids</option>
+              <option>Caregiver responsibilities</option>
+            </select>
+          </div>
+          <div>
+            <label for="wantsFederal">Interested in federal jobs?</label>
+            <select id="wantsFederal">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Maybe</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label for="careerGoal">What kind of work are you aiming for?</label>
+            <input id="careerGoal" placeholder="Example: project management, cybersecurity, law enforcement" />
+          </div>
+          <div>
+            <label for="educationGoal">What is the plan after separation?</label>
+            <select id="educationGoal">
+              <option>Employment first</option>
+              <option>School / college</option>
+              <option>Trades / certification</option>
+              <option>Federal job</option>
+              <option>Entrepreneurship / business</option>
+              <option>Undecided</option>
+            </select>
+          </div>
+        </div>
+
+        <label for="notes">Anything important to factor in</label>
+        <textarea id="notes" placeholder="Example: family move, medical issues, wanting remote work, wanting to use SkillBridge, no degree yet"></textarea>
+
+        <div class="btn-row no-print">
+          <button id="buildBtn">Build My Plan</button>
+          <button id="printBtn" class="secondary">Print / Save PDF</button>
+          <button id="sampleBtn" class="secondary">Load Example</button>
+          <button id="resetBtn" class="secondary">Reset</button>
+        </div>
+
+        <p class="footer-note">
+          This tool gives practical guidance, not legal advice or an official VA determination.
+          Always confirm benefits and deadlines through official VA, DoD, and state channels.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>What this app covers</h2>
+        <p class="sub">This is built to be simple, useful, and straight to the point.</p>
+
+        <div class="resource-box">
+          <h4>1. Timeline-based to do list</h4>
+          <p>Different tasks matter at 12 months out than they do at 30 days out. This app changes based on your timeline.</p>
+        </div>
+        <div class="resource-box" style="margin-top:10px;">
+          <h4>2. Job ideas that match what you actually did</h4>
+          <p>Your MOS, rank, and years in service are translated into civilian roles, leadership level, and keyword ideas for your resume.</p>
+        </div>
+        <div class="resource-box" style="margin-top:10px;">
+          <h4>3. VA and benefit steps in plain English</h4>
+          <p>GI Bill, disability claim timing, health care, home loan, education comparison tools, and where to start.</p>
+        </div>
+        <div class="resource-box" style="margin-top:10px;">
+          <h4>4. State and national support</h4>
+          <p>You will get direct links, simple explanations, and major veteran organizations worth knowing about after you get out.</p>
+        </div>
+        <div class="callout" style="margin-top:12px;">
+          <strong>Stuff people miss:</strong>
+          copies of records, personal email changes, LinkedIn, civilian clothes for interviews, local DMV rules, unemployment eligibility,
+          childcare plans, med refills, and actually booking appointments early instead of assuming there is time.
+        </div>
+      </div>
+    </section>
+
+    <section id="results" class="content-grid hidden">
+      <div class="card span-12">
+        <div class="section-title">
+          <h2 style="margin-bottom:0;">Your transition overview</h2>
+          <small id="overviewBadge"></small>
+        </div>
+        <div id="overviewText" class="muted"></div>
+        <div id="quickHits" class="pill-row"></div>
+      </div>
+
+
+      <div id="checklistCard" class="card span-12">
+        <div class="section-title">
+          <h3 style="margin-bottom:0;">Mission checklist</h3>
+          <small>Check it off as you go</small>
+        </div>
+        <div class="tip-box">
+          <strong id="checklistSummary">0 of 0 complete</strong>
+          <div class="progress-shell"><div id="checklistProgress" class="progress-fill"></div></div>
+          <p class="fine" style="margin-top:10px;">Your progress saves in this browser.</p>
+        </div>
+        <div id="checklistBox" class="checklist-wrap" style="margin-top:12px;"></div>
+      </div>
+
+      <div class="card span-6">
+        <div class="section-title">
+          <h3 style="margin-bottom:0;">Priority to do list</h3>
+          <small>Built from your timeline</small>
+        </div>
+        <div id="timelineBadge" class="timeline-badge"></div>
+        <ul id="todoList" class="list" style="margin-top:12px;"></ul>
+      </div>
+
+      <div class="card span-6">
+        <div class="section-title">
+          <h3 style="margin-bottom:0;">What civilian roles fit</h3>
+          <small>MOS + rank + years</small>
+        </div>
+        <ul id="jobsList" class="list"></ul>
+      </div>
+
+      <div class="card span-4">
+        <h3>Leadership translation</h3>
+        <p class="sub">How your rank and time in service may land on the civilian side.</p>
+        <div id="leadershipBox"></div>
+      </div>
+
+      <div class="card span-4">
+        <h3>Resume starter</h3>
+        <p class="sub">Use these ideas to stop sounding too military on paper.</p>
+        <ul id="resumeList" class="list"></ul>
+      </div>
+
+      <div class="card span-4">
+        <h3>Job search moves</h3>
+        <p class="sub">Simple stuff that actually helps.</p>
+        <ul id="jobTipsList" class="list"></ul>
+      </div>
+
+      <div id="vaCard" class="card span-6">
+        <h3>VA benefits and education</h3>
+        <p class="sub">Where to start and why it matters.</p>
+        <div id="vaBox"></div>
+      </div>
+
+      <div id="stateCard" class="card span-6">
+        <h3>State and local direction</h3>
+        <p class="sub">This points you to the right doors in the state where you plan to live.</p>
+        <div id="stateBox"></div>
+      </div>
+
+      
+      <div class="card span-6">
+        <h3>Spouse and family lane</h3>
+        <p class="sub">Transition hits the whole house, not just you.</p>
+        <div id="familyBox"></div>
+      </div>
+
+      <div class="card span-6">
+        <h3>Federal job lane</h3>
+        <p class="sub">If you are looking at USAJOBS, build for that world on purpose.</p>
+        <div id="federalBox"></div>
+      </div>
+
+<div id="resourceCard" class="card span-12">
+        <h3>Big veteran organizations worth knowing</h3>
+        <p class="sub">These are large, established organizations with real support networks, not random websites.</p>
+        <div id="resourceGrid" class="grid-3"></div>
+      </div>
+
+      <div class="card span-12">
+        <h3>Overlooked moves that save people later</h3>
+        <p class="sub">Not secret in a shady way. Just the things a lot of people learn too late.</p>
+        <ul id="missedList" class="list"></ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const states = [
+      "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia",
+      "Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts",
+      "Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico",
+      "New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina",
+      "South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"
+    ];
+
+    const stateAbbrev = {
+      "Alabama": 'AL', "Alaska": 'AK', "Arizona": 'AZ', "Arkansas": 'AR', "California": 'CA', "Colorado": 'CO', "Connecticut": 'CT', "Delaware": 'DE', "Florida": 'FL', "Georgia": 'GA',
+      "Hawaii": 'HI', "Idaho": 'ID', "Illinois": 'IL', "Indiana": 'IN', "Iowa": 'IA', "Kansas": 'KS', "Kentucky": 'KY', "Louisiana": 'LA', "Maine": 'ME', "Maryland": 'MD', "Massachusetts": 'MA',
+      "Michigan": 'MI', "Minnesota": 'MN', "Mississippi": 'MS', "Missouri": 'MO', "Montana": 'MT', "Nebraska": 'NE', "Nevada": 'NV', "New Hampshire": 'NH', "New Jersey": 'NJ', "New Mexico": 'NM',
+      "New York": 'NY', "North Carolina": 'NC', "North Dakota": 'ND', "Ohio": 'OH', "Oklahoma": 'OK', "Oregon": 'OR', "Pennsylvania": 'PA', "Rhode Island": 'RI', "South Carolina": 'SC',
+      "South Dakota": 'SD', "Tennessee": 'TN', "Texas": 'TX', "Utah": 'UT', "Vermont": 'VT', "Virginia": 'VA', "Washington": 'WA', "West Virginia": 'WV', "Wisconsin": 'WI', "Wyoming": 'WY'
+    };
+
+    const mosMap = [
+      {
+        keys: ["11", "infantry"],
+        title: "Combat arms / infantry style background",
+        jobs: ["Operations coordinator", "Security manager", "Site supervisor", "Emergency management specialist", "Law enforcement", "Field operations lead"],
+        resume: ["Led teams in high pressure environments", "Managed risk, accountability, and readiness", "Executed mission planning with limited time and incomplete information"]
+      },
+      {
+        keys: ["12", "engineer", "construction", "combat engineer"],
+        title: "Engineering / construction / route clearance style background",
+        jobs: ["Project coordinator", "Construction superintendent", "Safety specialist", "Facilities manager", "Utilities field supervisor", "Logistics planner"],
+        resume: ["Managed projects, equipment, and timelines", "Enforced safety and compliance standards", "Coordinated teams, resources, and mission execution"]
+      },
+      {
+        keys: ["15", "aviation", "aircraft"],
+        title: "Aviation and maintenance background",
+        jobs: ["Maintenance supervisor", "Quality assurance specialist", "Fleet manager", "Operations analyst", "Aviation support coordinator"],
+        resume: ["Maintained mission critical systems", "Worked under strict technical and safety standards", "Tracked readiness, inspections, and maintenance actions"]
+      },
+      {
+        keys: ["17", "25", "signal", "cyber", "it", "network", "2a", "1d7", "communications"],
+        title: "IT / signal / cyber / communications background",
+        jobs: ["Systems administrator", "IT support lead", "Cybersecurity analyst", "Network technician", "Technical project coordinator", "Help desk manager"],
+        resume: ["Supported networks, users, and mission systems", "Troubleshot technical issues under pressure", "Protected systems, access, and communications continuity"]
+      },
+      {
+        keys: ["31", "mp", "law enforcement", "security forces", "ma"],
+        title: "Law enforcement / security background",
+        jobs: ["Security manager", "Loss prevention manager", "Corporate security specialist", "Compliance investigator", "Emergency response coordinator"],
+        resume: ["Protected personnel, facilities, and assets", "Performed investigations and incident response", "Maintained standards, accountability, and reporting"]
+      },
+      {
+        keys: ["42", "admin", "human resources", "personnel", "yeoman"],
+        title: "Admin / HR / personnel background",
+        jobs: ["HR coordinator", "Operations administrator", "Program support specialist", "Office manager", "Talent acquisition coordinator"],
+        resume: ["Managed records, workflows, and personnel actions", "Coordinated reporting and administrative processes", "Supported leaders and teams with high accuracy"]
+      },
+      {
+        keys: ["68", "hm", "medical", "medic", "health"],
+        title: "Medical / healthcare background",
+        jobs: ["Medical assistant", "Patient services coordinator", "Clinical operations support", "Safety and occupational health", "Healthcare administrator"],
+        resume: ["Provided care and support in demanding settings", "Managed documentation and patient flow", "Maintained standards under stressful conditions"]
+      },
+      {
+        keys: ["88", "92", "logistics", "transport", "supply", "motor", "cargo"],
+        title: "Logistics / transportation / supply background",
+        jobs: ["Logistics coordinator", "Transportation manager", "Warehouse supervisor", "Fleet operations manager", "Supply chain analyst"],
+        resume: ["Coordinated movement of people, equipment, and supplies", "Tracked inventory, readiness, and transportation assets", "Balanced timelines, accountability, and execution"]
+      },
+      {
+        keys: ["13", "artillery", "fire support"],
+        title: "Targeting / fires / coordination background",
+        jobs: ["Operations planner", "Data analyst", "Project control specialist", "Dispatch supervisor", "Emergency operations coordinator"],
+        resume: ["Worked with time sensitive coordination and execution", "Used data, systems, and communication under pressure", "Managed sequencing, timing, and support"]
+      },
+      {
+        keys: ["09", "recruiter", "career counselor", "instructor", "training"],
+        title: "Recruiting / training / counseling background",
+        jobs: ["Recruiter", "Admissions representative", "Account manager", "Corporate trainer", "Student success coach", "Program manager"],
+        resume: ["Built trust, guided people, and drove outcomes", "Worked in high tempo communication and follow-up cycles", "Balanced relationship building with mission results"]
+      }
+    ];
+
+    const nationalResources = [
+      {
+        name: "VA Education",
+        website: "https://www.va.gov/education/",
+        contact: "VA main line: 800-698-2411",
+        offers: "GI Bill, education benefits, training options, Yellow Ribbon information, and how to apply.",
+        why: "Start here if school, certifications, or training are part of your plan."
+      },
+      {
+        name: "VA Disability and BDD",
+        website: "https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/",
+        contact: "VA benefits hotline: 800-827-1000",
+        offers: "Pre-discharge disability claim information, including the BDD window before separation.",
+        why: "This matters if you have documented conditions and want to start your claim before getting out."
+      },
+      {
+        name: "GI Bill Comparison Tool",
+        website: "https://www.va.gov/education/gi-bill-comparison-tool/",
+        contact: "Online comparison tool",
+        offers: "Lets you compare schools and programs that take GI Bill benefits.",
+        why: "Use this before you enroll so you know what your benefits may actually cover."
+      },
+      {
+        name: "National Resource Directory",
+        website: "https://nrd.gov/",
+        contact: "Online vetted directory",
+        offers: "National, state, and local resources for veterans, service members, families, and caregivers.",
+        why: "Good catch-all tool when you are trying to find support fast."
+      },
+      {
+        name: "Hire Heroes USA",
+        website: "https://www.hireheroesusa.org/",
+        contact: "Website intake and job board",
+        offers: "Free career coaching, resume help, interview prep, and job search support.",
+        why: "One of the best places to start if you want help landing civilian work."
+      },
+      {
+        name: "USO Pathfinder Transition Program",
+        website: "https://www.uso.org/programs/uso-transition-program",
+        contact: "USO online sign-up",
+        offers: "One-on-one transition support, action plans, career help, education guidance, and financial wellness help.",
+        why: "Good if you want someone to help you build a plan instead of doing it alone."
+      },
+      {
+        name: "DAV",
+        website: "https://www.dav.org/get-help-now/",
+        contact: "DAV locator on website",
+        offers: "Free VA claims help, benefits guidance, and employment support.",
+        why: "Strong option if you need help navigating the VA without paying anyone."
+      },
+      {
+        name: "Wounded Warrior Project",
+        website: "https://www.woundedwarriorproject.org/programs/career-and-va-benefits-counseling",
+        contact: "Resource Center: 888-997-2586",
+        offers: "Career counseling, benefits guidance, financial wellness, and broader support programs.",
+        why: "Useful if you want both transition help and broader support in one place."
+      },
+      {
+        name: "The American Legion",
+        website: "https://www.legion.org/",
+        contact: "National website locator",
+        offers: "Advocacy, local posts, claims support, networking, and community connection.",
+        why: "Can be useful for local network building and veteran community support."
+      },
+      {
+        name: "VFW",
+        website: "https://www.vfw.org/",
+        contact: "Post locator on website",
+        offers: "Veteran service officers, claims help, advocacy, and community support.",
+        why: "Another major national organization that can help at the local level."
+      },
+      {
+        name: "Mt. Carmel Veterans Service Center",
+        website: "https://www.veteranscenter.org/",
+        contact: "Main line: 719-772-7000",
+        offers: "Transition and employment help, behavioral health and wellness, supportive services, and connection to community resources.",
+        why: "Especially strong example of a wraparound veteran center model."
+      },
+      {
+        name: "Veterans Crisis Line",
+        website: "https://www.veteranscrisisline.net/",
+        contact: "Dial 988 then press 1, or text 838255",
+        offers: "24/7 confidential crisis support for veterans, service members, and loved ones.",
+        why: "Use this immediately if things are going bad or you are worried about someone."
+      }
+    ];
+
+
+    const FORM_FIELDS = ['branch','rank','serviceYears','mos','daysLeft','state','zipCode','careerGoal','educationGoal','notes','familyStatus','wantsFederal'];
+
+    function getFormData() {
+      const out = {};
+      FORM_FIELDS.forEach(id => out[id] = document.getElementById(id)?.value || '');
+      return out;
+    }
+
+    function saveFormState() {
+      localStorage.setItem('transitionReadyForm', JSON.stringify(getFormData()));
+    }
+
+    function loadFormState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('transitionReadyForm') || '{}');
+        FORM_FIELDS.forEach(id => {
+          if (saved[id] !== undefined && document.getElementById(id)) {
+            document.getElementById(id).value = saved[id];
+          }
+        });
+      } catch (e) {}
+    }
+
+    function getChecklistStorageKey() {
+      const f = getFormData();
+      return 'transitionChecklist:' + [f.branch, f.rank, f.mos, f.daysLeft, f.state, f.zipCode, f.educationGoal].join('|');
+    }
+
+    function getSavedChecklistState() {
+      try {
+        return JSON.parse(localStorage.getItem(getChecklistStorageKey()) || '{}');
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveChecklistState(state) {
+      localStorage.setItem(getChecklistStorageKey(), JSON.stringify(state));
+    }
+
+    function slugify(text) {
+      return String(text).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80);
+    }
+
+    function renderChecklist(items) {
+      const box = document.getElementById('checklistBox');
+      const saved = getSavedChecklistState();
+      box.innerHTML = items.map(item => {
+        const id = slugify(item);
+        const checked = !!saved[id];
+        return `
+          <label class="check-item ${checked ? 'done' : ''}">
+            <input type="checkbox" data-check-id="${id}" ${checked ? 'checked' : ''}>
+            <div class="check-text">${escapeHtml(item)}</div>
+          </label>
+        `;
+      }).join('');
+
+      box.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const state = getSavedChecklistState();
+          state[cb.dataset.checkId] = cb.checked;
+          saveChecklistState(state);
+          cb.closest('.check-item').classList.toggle('done', cb.checked);
+          updateChecklistProgress();
+        });
+      });
+      updateChecklistProgress();
+    }
+
+    function updateChecklistProgress() {
+      const checks = [...document.querySelectorAll('#checklistBox input[type="checkbox"]')];
+      const done = checks.filter(x => x.checked).length;
+      const total = checks.length;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      document.getElementById('checklistSummary').textContent = `${done} of ${total} complete`;
+      document.getElementById('checklistProgress').style.width = pct + '%';
+    }
+
+    function populateStates() {
+      const stateSelect = document.getElementById('state');
+      states.forEach(state => {
+        const opt = document.createElement('option');
+        opt.value = state;
+        opt.textContent = state;
+        if (state === 'Colorado') opt.selected = true;
+        stateSelect.appendChild(opt);
+      });
+    }
+
+    function getTimelineBucket(daysLeft) {
+      if (daysLeft >= 365) return '12+ months';
+      if (daysLeft >= 180) return '6-12 months';
+      if (daysLeft >= 90) return '3-6 months';
+      if (daysLeft >= 30) return '30-89 days';
+      return 'Less than 30 days';
+    }
+
+    function getTimelineTasks(daysLeft, educationGoal) {
+      const common = [
+        'Build a master folder with DD214 plan, orders, medical records, evals, awards, certs, licenses, and transcripts.',
+        'Use a personal email and personal phone number for every benefit, school, and job account so nothing dies with your .mil access.',
+        'Create or update LinkedIn and make your headline civilian friendly.',
+        'Start translating military language into plain English now, not the week you get out.'
+      ];
+
+      const tasks = [];
+      if (daysLeft >= 365) {
+        tasks.push(
+          'Set your civilian target: employment, school, trade, federal service, or business. The earlier you pick a lane, the easier your next year gets.',
+          'Start building your resume now and track measurable results from your current role.',
+          'Research salary ranges, cost of living, and housing in the state where you plan to move.',
+          'Check what licenses or certs your target field expects and whether you can get them while still in service.',
+          'If you may file a VA claim later, start documenting issues and getting seen while you are still in.'
+        );
+      } else if (daysLeft >= 180) {
+        tasks.push(
+          'Lock in your transition timeline and stop treating it like it is far away.',
+          'Book resume help, career counseling, or transition coaching now.',
+          'Research SkillBridge or equivalent options if still available in your command timeline.',
+          'Map your MOS, rank, and responsibilities into 3 to 5 civilian job targets.',
+          'If health issues are documented, learn the BDD window and gather evidence early.'
+        );
+      } else if (daysLeft >= 90) {
+        tasks.push(
+          'You are in the BDD window now if you still have 180 to 90 days before separation. Move on disability prep if it applies.',
+          'Start applying for jobs instead of only researching them.',
+          'Get copies of every record you may need before accounts, systems, and access change.',
+          'Choose your school or training path and verify it in the GI Bill Comparison Tool before committing.',
+          'Line up housing, transportation, family plan, and income bridge for the first few months out.'
+        );
+      } else if (daysLeft >= 30) {
+        tasks.push(
+          'Treat this like go time. Tighten your resume, interview prep, and applications immediately.',
+          'Confirm your separation paperwork and make sure your address, phone, and banking are correct everywhere.',
+          'Refill medications, check Tricare transition rules, and identify your nearest VA or civilian providers.',
+          'Know where your first paycheck, GI Bill payment, or unemployment bridge may come from.',
+          'Make a first-30-days-after-ETS checklist so you do not lose momentum.'
+        );
+      } else {
+        tasks.push(
+          'You are in the immediate action zone. Focus on income, health care continuity, records, housing, and VA setup first.',
+          'Apply to jobs daily and follow up hard.',
+          'Enroll in VA health care if eligible and identify local support right away.',
+          'Use veteran organizations for resume help, benefits support, and local connection instead of trying to muscle through solo.',
+          'Build a weekly battle rhythm for civilian life so you do not drift after separation.'
+        );
+      }
+
+      if (educationGoal === 'School / college') {
+        tasks.push('Compare schools before signing anything. Look at cost, benefit coverage, outcomes, and location using the GI Bill Comparison Tool.');
+      }
+      if (educationGoal === 'Federal job') {
+        tasks.push('Build a USAJOBS profile early and prepare a federal style resume, which is much more detailed than a normal civilian resume.');
+      }
+      if (educationGoal === 'Entrepreneurship / business') {
+        tasks.push('Research veteran business support, local small business centers, licensing, startup costs, and whether a side income bridge is needed first.');
+      }
+
+      return [...common, ...tasks];
+    }
+
+    function getMosProfile(mos, careerGoal) {
+      const query = `${mos} ${careerGoal}`.toLowerCase();
+      const match = mosMap.find(group => group.keys.some(key => query.includes(key.toLowerCase())));
+      if (match) return match;
+      return {
+        title: 'General military operations background',
+        jobs: ['Operations coordinator', 'Project coordinator', 'Program specialist', 'Training specialist', 'Supervisor', 'Client support lead'],
+        resume: ['Led people, equipment, and priorities under pressure', 'Worked inside structured systems with standards and accountability', 'Adapted quickly and delivered results in high tempo environments']
+      };
+    }
+
+    function getLeadershipProfile(rank, serviceYears) {
+      const r = (rank || '').toUpperCase().trim();
+      const years = Number(serviceYears) || 0;
+
+      let level = 'Individual contributor with team experience';
+      let positions = ['Coordinator', 'Specialist', 'Technician', 'Analyst'];
+      let summary = 'You likely bring discipline, reliability, and execution strength. Even if you were not a senior leader, civilian employers still value ownership and accountability.';
+
+      if (/E[5-6]|SGT|SSG|PO2|PO1|NCO/.test(r)) {
+        level = 'Frontline leader';
+        positions = ['Team lead', 'Supervisor', 'Operations lead', 'Training lead', 'Shift manager'];
+        summary = 'You likely supervised people, enforced standards, handled accountability, and solved problems in real time. That translates well into first line leadership roles.';
+      }
+      if (/E[7-9]|MSG|1SG|SGM|CPO|MCPO|SNCO/.test(r)) {
+        level = 'Senior enlisted leader';
+        positions = ['Operations manager', 'Program manager', 'Senior supervisor', 'Site manager', 'Department lead'];
+        summary = 'You likely managed teams, readiness, reporting, standards, and senior leader communication. Civilian employers may see this as manager level experience when framed correctly.';
+      }
+      if (/O[1-3]|LT|CPT/.test(r)) {
+        level = 'Junior officer / manager';
+        positions = ['Project manager', 'Operations manager', 'Program coordinator', 'Account manager', 'Business analyst'];
+        summary = 'You likely handled planning, execution, team leadership, and higher level coordination. Civilian employers may map that toward manager or project lead roles.';
+      }
+      if (/O[4-6]|MAJ|LTC|COL|CDR|CAPT/.test(r)) {
+        level = 'Senior manager / director track';
+        positions = ['Senior program manager', 'Director of operations', 'Department manager', 'Strategic planner', 'Regional manager'];
+        summary = 'Your experience may translate into director level or senior management roles if you connect your scope, budgets, staffing, and outcomes clearly.';
+      }
+      if (/W|CW/.test(r)) {
+        level = 'Technical leader';
+        positions = ['Technical manager', 'Lead specialist', 'Systems lead', 'Senior advisor', 'Operations subject matter expert'];
+        summary = 'Warrant style experience often maps well to high trust technical leadership, specialized operations, and advisor roles.';
+      }
+      if (years >= 15 && level === 'Individual contributor with team experience') {
+        positions = ['Senior specialist', 'Lead coordinator', 'Project lead', 'Operations lead'];
+        summary = 'Your years matter. Even without a classic leadership title, long service often means maturity, reliability, and strong operational judgment.';
+      }
+
+      return { level, positions, summary };
+    }
+
+    function stateResourceLinks(state, zipCode) {
+      const encodedState = encodeURIComponent(state + ' veterans affairs');
+      const stateCode = stateAbbrev[state] || '';
+      const zip = (zipCode || '').trim();
+      return {
+        nasdva: 'https://nasdva.us/resources/',
+        vaLocator: 'https://www.va.gov/find-locations/',
+        vetCenterSearch: `https://www.va.gov/find-locations/?facilityType=vet_center`,
+        stateSearch: `https://www.google.com/search?q=${encodedState}`,
+        laborSearch: `https://www.google.com/search?q=${encodeURIComponent(state + ' veteran employment resources')}`,
+        benefitsSearch: `https://www.google.com/search?q=${encodeURIComponent(state + ' veterans benefits')}`,
+        unemploymentSearch: `https://www.google.com/search?q=${encodeURIComponent(state + ' unemployment veterans')}`,
+        womenSearch: `https://www.google.com/search?q=${encodeURIComponent(state + ' women veterans resources')}`,
+        propertyTaxSearch: `https://www.google.com/search?q=${encodeURIComponent(state + ' veteran property tax exemption')}`,
+        countySearch: `https://www.google.com/search?q=${encodeURIComponent((zip ? zip + ' ' : '') + state + ' county veteran service officer')}`,
+        orgSearch: `https://www.google.com/search?q=${encodeURIComponent((zip ? zip + ' ' : '') + state + ' veteran organizations')}`,
+        code: stateCode,
+        zip
+      };
+    }
+
+    function createResourceCard(resource) {
+      return `
+        <div class="resource-box">
+          <h4>${resource.name}</h4>
+          <p><strong>What it offers:</strong> ${resource.offers}</p>
+          <p><strong>Why it matters:</strong> ${resource.why}</p>
+          <p><strong>Contact:</strong> ${resource.contact}</p>
+          <p><a href="${resource.website}" target="_blank" rel="noopener">Open website</a></p>
+        </div>
+      `;
+    }
+
+    function buildPlan() {
+      const branch = document.getElementById('branch').value;
+      const rank = document.getElementById('rank').value.trim();
+      const serviceYears = Number(document.getElementById('serviceYears').value || 0);
+      const mos = document.getElementById('mos').value.trim();
+      const daysLeft = Number(document.getElementById('daysLeft').value || 0);
+      const state = document.getElementById('state').value;
+      const zipCode = document.getElementById('zipCode').value.trim();
+      const careerGoal = document.getElementById('careerGoal').value.trim();
+      const educationGoal = document.getElementById('educationGoal').value;
+      const notes = document.getElementById('notes').value.trim();
+      const familyStatus = document.getElementById('familyStatus').value;
+      const wantsFederal = document.getElementById('wantsFederal').value;
+      saveFormState();
+
+      const timeline = getTimelineBucket(daysLeft);
+      const mosProfile = getMosProfile(mos, careerGoal);
+      const leadership = getLeadershipProfile(rank, serviceYears);
+      const taskList = getTimelineTasks(daysLeft, educationGoal);
+      const links = stateResourceLinks(state, zipCode);
+
+      document.getElementById('results').classList.remove('hidden');
+      document.getElementById('overviewBadge').textContent = `${branch} | ${rank || 'Rank not entered'} | ${timeline}`;
+      document.getElementById('timelineBadge').textContent = `Timeline: ${timeline}`;
+
+      document.getElementById('overviewText').innerHTML = `
+        <p>
+          Based on what you entered, your transition plan should focus on <strong>${educationGoal.toLowerCase()}</strong>,
+          translating your <strong>${mos || 'military background'}</strong> into civilian language, and building a solid runway for <strong>${state}</strong>.
+          ${notes ? `You also flagged this: <strong>${escapeHtml(notes)}</strong>.` : ''}
+        </p>
+        <p>
+          Civilian employers usually do not understand your job title automatically. Your edge is not just the MOS. It is your ability to show leadership,
+          accountability, problem solving, training, safety, planning, and results in normal language.
+        </p>
+      `;
+
+      const quickHits = [
+        `${daysLeft} days until separation`,
+        `${serviceYears || 'Unknown'} years served`,
+        mosProfile.title,
+        leadership.level,
+        `Target state: ${state}`,
+        `Lane: ${educationGoal}`
+      ];
+      document.getElementById('quickHits').innerHTML = quickHits.map(item => `<span class="pill">${escapeHtml(item)}</span>`).join('');
+
+      document.getElementById('todoList').innerHTML = taskList.map(task => `<li>${escapeHtml(task)}</li>`).join('');
+
+      const jobs = [...mosProfile.jobs, ...leadership.positions];
+      const uniqueJobs = [...new Set(jobs)].slice(0, 10);
+      const jobsExtra = careerGoal ? `Based on your goal of <strong>${escapeHtml(careerGoal)}</strong>, prioritize roles that connect your military experience to that lane.` : '';
+      document.getElementById('jobsList').innerHTML = uniqueJobs.map(job => `<li>${escapeHtml(job)}</li>`).join('') + `<li>${jobsExtra || 'Search these roles with words like operations, supervisor, coordinator, manager, specialist, and analyst.'}</li>`;
+
+      document.getElementById('leadershipBox').innerHTML = `
+        <div class="tip-box">
+          <p><strong>Likely civilian level:</strong> ${escapeHtml(leadership.level)}</p>
+          <p>${escapeHtml(leadership.summary)}</p>
+          <p><strong>Role targets:</strong> ${escapeHtml(leadership.positions.join(', '))}</p>
+        </div>
+      `;
+
+      const resumeIdeas = [
+        ...mosProfile.resume,
+        'Replace military acronyms unless the civilian employer will clearly know them.',
+        'Use numbers when possible: team size, equipment value, locations managed, training completed, or results improved.',
+        'Write bullets around outcomes, not just duties.'
+      ];
+      document.getElementById('resumeList').innerHTML = [...new Set(resumeIdeas)].map(item => `<li>${escapeHtml(item)}</li>`).join('');
+
+      const jobTips = [
+        'Apply for jobs you are 60 to 80 percent qualified for. Do not self-select out too early.',
+        'Build one core resume, then tune it for each role instead of starting over every time.',
+        'Use LinkedIn, Hire Heroes USA, and veteran networks instead of relying only on job boards.',
+        'Have a clean answer for why you are leaving the military and what you want next.',
+        'Practice a short story that explains your leadership, reliability, and problem solving in civilian words.',
+        educationGoal === 'Federal job' ? 'Federal resumes are longer and more detailed than private sector resumes. Build yours for USAJOBS, not for one page only.' : 'Tailor your resume to the industry. A security role and a project role should not read the same.'
+      ];
+      document.getElementById('jobTipsList').innerHTML = jobTips.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+
+      const vaItems = [
+        {
+          title: 'GI Bill and education benefits',
+          body: 'This is where you look at school and training benefits. If school, certifications, or trades are part of your plan, start here and compare programs before signing anything.',
+          link: 'https://www.va.gov/education/'
+        },
+        {
+          title: 'Apply for the GI Bill',
+          body: 'If you are ready to use education benefits, this is the application path. It is the front door for getting your education benefits moving.',
+          link: 'https://www.va.gov/education/how-to-apply/'
+        },
+        {
+          title: 'BDD and pre-discharge disability claims',
+          body: 'If you have documented service connected issues, the BDD route can matter a lot. Do not wait until the last minute if you are inside the eligible window.',
+          link: 'https://www.va.gov/disability/how-to-file-claim/when-to-file/pre-discharge-claim/'
+        },
+        {
+          title: 'VA health care and locations',
+          body: 'This helps you find facilities, clinics, and care options near where you will live after service.',
+          link: 'https://www.va.gov/find-locations/'
+        },
+        {
+          title: 'GI Bill Comparison Tool',
+          body: 'Use this before picking a school. It helps you compare schools and estimate how your education benefits may apply.',
+          link: 'https://www.va.gov/education/gi-bill-comparison-tool/'
+        },
+        {
+          title: 'VA home loan information',
+          body: 'If buying a home is part of your transition plan, learn the basics of VA-backed home loans and eligibility here.',
+          link: 'https://www.va.gov/housing-assistance/home-loans/'
+        }
+      ];
+
+      const dynamicVA = daysLeft >= 90 && daysLeft <= 180
+        ? '<div class="callout"><strong>You may be in the BDD window.</strong> If you are 180 to 90 days from separation and have documented conditions, this is the time to learn the pre-discharge claim process and get organized.</div>'
+        : '<div class="tip-box"><strong>VA tip:</strong> Even if you are not ready to file anything today, start gathering records, documenting issues, and learning the process now so you are not scrambling later.</div>';
+
+      document.getElementById('vaBox').innerHTML = dynamicVA + vaItems.map(item => `
+        <div class="resource-box" style="margin-top:10px;">
+          <h4>${item.title}</h4>
+          <p>${item.body}</p>
+          <p><a href="${item.link}" target="_blank" rel="noopener">Open resource</a></p>
+        </div>
+      `).join('');
+
+      document.getElementById('stateBox').innerHTML = `
+        <div class="resource-box">
+          <h4>${state} veteran resources</h4>
+          <p>Your first move in a new state is usually to find the state department of veterans affairs, your nearest VA locations, and any county or local veteran service officers.${zipCode ? ' With your ZIP code in mind, start local and work outward.' : ''}</p>
+          <p><a href="${links.nasdva}" target="_blank" rel="noopener">Find state agencies through NASDVA</a></p>
+          <p><a href="${links.stateSearch}" target="_blank" rel="noopener">Search ${state} veteran affairs</a></p>
+          <p><a href="${links.vaLocator}" target="_blank" rel="noopener">Find VA locations</a></p>
+          <p><a href="${links.vetCenterSearch}" target="_blank" rel="noopener">Find Vet Centers</a></p>
+          <p><a href="${links.countySearch}" target="_blank" rel="noopener">Search county or local veteran help</a></p>
+          <p><a href="${links.orgSearch}" target="_blank" rel="noopener">Search veteran organizations near you</a></p>
+        </div>
+        <div class="resource-box" style="margin-top:10px;">
+          <h4>What to look for in ${state}</h4>
+          <p>State benefits vary. Look for education benefits, state tuition help, tax exemptions, veteran ID rules, employment programs, property tax relief, and local county veteran offices.</p>
+          <p><a href="${links.benefitsSearch}" target="_blank" rel="noopener">Search state veteran benefits</a></p>
+          <p><a href="${links.propertyTaxSearch}" target="_blank" rel="noopener">Search veteran property tax relief</a></p>
+          <p><a href="${links.laborSearch}" target="_blank" rel="noopener">Search employment resources</a></p>
+          <p><a href="${links.unemploymentSearch}" target="_blank" rel="noopener">Search unemployment information</a></p>
+          <p><a href="${links.womenSearch}" target="_blank" rel="noopener">Search women veteran resources</a></p>
+        </div>
+        <div class="tip-box" style="margin-top:10px;">
+          <strong>Simple rule:</strong> once you know your state, start looking for the actual state veteran agency, the nearest VA care option, and the county-level veteran help. Those are usually the three doors that open the most support.
+        </div>
+      `;
+
+
+      const familyTips = [
+        'Brief your spouse or partner on the real timeline, not the optimistic one. Unknowns create stress fast.',
+        'Decide who owns what: housing search, school search, childcare, budget, appointments, and move tasks.',
+        'If kids are involved, line up school records, enrollment deadlines, and backup childcare early.',
+        'Talk through the first 90 days after separation so the family knows what income, schedule, and stress may look like.',
+        familyStatus.includes('partner') || familyStatus.includes('Married') ? 'Make sure your spouse or partner has copies of important documents and knows the benefits plan too.' : 'Even if you are single, choose one trusted person who knows your plan and can help if things get sideways.'
+      ];
+      document.getElementById('familyBox').innerHTML = `
+        <div class="tip-box">
+          <p><strong>Family status:</strong> ${escapeHtml(familyStatus)}</p>
+          <p>Transition goes better when the household has one plan, one budget picture, and one calendar.</p>
+        </div>
+        <ul class="list" style="margin-top:12px;">${familyTips.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+      `;
+
+      const federalTips = [
+        'A federal resume is usually longer than a private sector resume. It needs detail, not just a one page highlight sheet.',
+        'Mirror the language in the job posting where it is honest and true. Do not make HR guess.',
+        'Include hours worked per week, dates, title, employer, and detailed duties and results.',
+        'Translate leadership into supervision, staffing, training, compliance, planning, and resource management.',
+        wantsFederal === 'Yes' ? 'Since federal work is on your radar, build a USAJOBS profile now and save several targeted resumes.' : 'If federal work becomes a real option, build a USAJOBS profile before you need it.'
+      ];
+      document.getElementById('federalBox').innerHTML = `
+        <div class="resource-box">
+          <h4>Plain English federal resume advice</h4>
+          <p>Federal hiring is its own lane. Build for USAJOBS on purpose instead of sending the same private sector resume everywhere.</p>
+          <p><a href="https://www.usajobs.gov/help/how-to/account/documents/resume/" target="_blank" rel="noopener">USAJOBS resume guidance</a></p>
+        </div>
+        <ul class="list" style="margin-top:12px;">${federalTips.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+      `;
+
+      document.getElementById('resourceGrid').innerHTML = nationalResources.map(createResourceCard).join('');
+
+      const missedItems = [
+        'Download or save copies of your records before access changes. Do not assume you can get everything easily later.',
+        'Keep a civilian email, civilian phone number, and stable mailing address on everything important.',
+        'Plan for a pay gap. School payments, disability decisions, and job start dates do not always line up cleanly.',
+        'If you take interviews, dress civilian and practice telling your story without acronyms.',
+        'Ask for LinkedIn recommendations from leaders or peers before everyone scatters.',
+        'Check DMV, license transfer, and registration rules in your next state.',
+        'If you have prescriptions or ongoing care, handle continuity before you separate, not after you run out.',
+        'Use free accredited claims help. Do not pay random companies promising fast VA results.',
+        'Figure out childcare, spouse employment, and housing early. Family friction can wreck a transition fast.',
+        'Treat the first 90 days after separation like a mission. Build structure, not drift.'
+      ];
+      document.getElementById('missedList').innerHTML = missedItems.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+
+      window.scrollTo({ top: document.getElementById('results').offsetTop - 12, behavior: 'smooth' });
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function loadExample() {
+      document.getElementById('branch').value = 'Army';
+      document.getElementById('rank').value = 'E6';
+      document.getElementById('serviceYears').value = '8';
+      document.getElementById('mos').value = '12B Combat Engineer';
+      document.getElementById('daysLeft').value = '140';
+      document.getElementById('state').value = 'Colorado';
+      document.getElementById('zipCode').value = '80903';
+      document.getElementById('careerGoal').value = 'project management and operations';
+      document.getElementById('educationGoal').value = 'Employment first';
+      document.getElementById('familyStatus').value = 'Married / partner';
+      document.getElementById('wantsFederal').value = 'Maybe';
+      document.getElementById('notes').value = 'Want to use veteran resources in Colorado Springs, may file VA claim, and want roles with leadership upside.';
+      saveFormState();
+      buildPlan();
+    }
+
+    function resetForm() {
+      document.getElementById('rank').value = '';
+      document.getElementById('serviceYears').value = '';
+      document.getElementById('mos').value = '';
+      document.getElementById('daysLeft').value = '';
+      document.getElementById('careerGoal').value = '';
+      document.getElementById('educationGoal').value = 'Employment first';
+      document.getElementById('zipCode').value = '';
+      document.getElementById('familyStatus').value = 'Single';
+      document.getElementById('wantsFederal').value = 'No';
+      document.getElementById('notes').value = '';
+      localStorage.removeItem('transitionReadyForm');
+      document.getElementById('results').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    populateStates();
+    loadFormState();
+    FORM_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', saveFormState);
+      if (el) el.addEventListener('change', saveFormState);
+    });
+    document.getElementById('buildBtn').addEventListener('click', buildPlan);
+    document.getElementById('sampleBtn').addEventListener('click', loadExample);
+    document.getElementById('resetBtn').addEventListener('click', resetForm);
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+  </script>
+</body>
+</html>
